@@ -75,8 +75,8 @@ app = Flask(__name__)
 
 # ✅ Production-ready CORS configuration
 ALLOWED_ORIGINS = [
+    "https://vntemplatesdownloader.netlify.app",
     "https://vntemplatesqrdownloader.netlify.app",
-    "https://Vntemplatesqrdownloader.netlify.app",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://localhost:5000",
@@ -1968,3 +1968,4 @@ if __name__ == "__main__":
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
