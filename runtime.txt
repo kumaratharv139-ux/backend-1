@@ -1,0 +1,38 @@
+python-3.11.9
+```
+
+### **3. Render Environment Variables:**
+```
+FIREBASE_CREDENTIALS = {your minified JSON}
+PYTHON_VERSION = 3.11.0
+PORT = 10000
+```
+
+---
+
+## ⚡ **Ek Aur Alternative Fix:**
+
+Agar upar se nahi hua to **Build Command** change karo Render mein:
+
+**Purana:**
+```
+pip install -r requirements.txt
+```
+
+**Naya:**
+```
+pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
+```
+
+---
+
+## 🔍 **Render Logs Check Karo:**
+
+Deployment ke baad logs mein ye dikhna chahiye:
+```
+✅ Installing setuptools...
+✅ Installing Flask...
+✅ Installing firebase-admin...
+✅ Installing razorpay...
+✅ Build successful
+✅ Starting gunicorn...
