@@ -70,6 +70,9 @@ def now_utc():
 def now_str():
     return now_utc().isoformat()
 
+-Type", "Authorization"],
+     max_age=3600)
+
 # ----------------- APP INIT -----------------
 app = Flask(__name__)
 
@@ -77,6 +80,8 @@ app = Flask(__name__)
 ALLOWED_ORIGINS = [
     "https://vntemplatesdownloader.netlify.app",
     "https://vntemplatesqrdownloader.netlify.app",
+    "https://vntemplatesqrdownloader.online",  # ✅ ADDED YOUR DOMAIN
+    "https://qrdownloader.online",  # ✅ ADDED (if you have this too)
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://localhost:5000",
@@ -1968,4 +1973,5 @@ if __name__ == "__main__":
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
