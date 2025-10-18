@@ -24,7 +24,6 @@ os.environ['GLOG_minloglevel'] = '2'
 logging.getLogger('google.auth').setLevel(logging.ERROR)
 logging.getLogger('google.cloud').setLevel(logging.ERROR)
 
-
 # ✅ CRITICAL FIX: Force IPv4 for gRPC/Firestore
 os.environ['GRPC_DNS_RESOLVER'] = 'native'
 
@@ -70,9 +69,6 @@ def now_utc():
 def now_str():
     return now_utc().isoformat()
 
--Type", "Authorization"],
-     max_age=3600)
-
 # ----------------- APP INIT -----------------
 app = Flask(__name__)
 
@@ -80,8 +76,8 @@ app = Flask(__name__)
 ALLOWED_ORIGINS = [
     "https://vntemplatesdownloader.netlify.app",
     "https://vntemplatesqrdownloader.netlify.app",
-    "https://vntemplatesqrdownloader.online",  # ✅ ADDED YOUR DOMAIN
-    "https://qrdownloader.online",  # ✅ ADDED (if you have this too)
+    "https://vntemplatesqrdownloader.online",
+    "https://qrdownloader.online",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://localhost:5000",
@@ -107,7 +103,6 @@ def after_request(response):
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,x-admin-session,X-Admin-Session'
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
     return response
-
 # ----------------- Cloudinary -----------------
 cloudinary.config(
     cloud_name=CLOUDINARY_CLOUD_NAME,
@@ -1973,5 +1968,6 @@ if __name__ == "__main__":
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
