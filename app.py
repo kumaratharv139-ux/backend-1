@@ -448,18 +448,77 @@ def get_user_by_firebase_uid(firebase_uid):
         user_doc = db.collection("users").document(firebase_uid).get(timeout=10)
 
         if not user_doc.exists:
-            return jsonify({"error": "User not found"}), 404
+            # 🔥 User document doesn't exist - create it now
+            print(f"⚠️ User document not found for UID: {firebase_uid}, creating now...")
+            
+            try:
+                firebase_user = firebase_auth.get_user(firebase_uid)
+                email = firebase_user.email
+                display_name = firebase_user.display_name or email.split('@')[0]
+            except Exception as e:
+                print(f"❌ Cannot fetch Firebase user: {e}")
+                return jsonify({"error": "User not found in Firebase"}), 404
+            
+            # Generate new userId and referralCode
+            user_id = generate_user_id()
+            referral_code = generate_referral_code()
+            
+            # Create user document
+            db.collection("users").document(firebase_uid).set({
+                "email": email,
+                "displayName": display_name,
+                "provider": "google",
+                "userId": user_id,
+                "referralCode": referral_code,
+                "bonusDownloads": 0,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "isOnline": True,
+                "loginCount": 1,
+                "likesCount": 0,
+                "downloadsCount": 0,
+                "lastLogin": now_str()
+            }, timeout=10)
+            
+            print(f"✅ User created: {email} | User ID: {user_id} | Referral: {referral_code}")
+            
+            return jsonify({
+                "uid": firebase_uid,
+                "email": email,
+                "displayName": display_name,
+                "userId": user_id,
+                "referralCode": referral_code,
+                "bonusDownloads": 0,
+                "isOnline": True
+            }), 200
 
         user_data = user_doc.to_dict()
+        
+        # 🔥 Check if userId exists, if not generate it
+        user_id = user_data.get("userId")
+        if not user_id or user_id == "USER_0000":
+            print(f"⚠️ Invalid userId for {firebase_uid}, regenerating...")
+            user_id = generate_user_id()
+            referral_code = user_data.get("referralCode") or generate_referral_code()
+            
+            db.collection("users").document(firebase_uid).update({
+                "userId": user_id,
+                "referralCode": referral_code
+            }, timeout=10)
+            
+            print(f"✅ userId regenerated: {user_id}")
+            user_data["userId"] = user_id
+            user_data["referralCode"] = referral_code
 
         return jsonify({
             "uid": firebase_uid,
             "email": user_data.get("email"),
             "displayName": user_data.get("displayName"),
-            "userId": user_data.get("userId", "USER_0000"),
+            "userId": user_data.get("userId"),
             "referralCode": user_data.get("referralCode"),
             "bonusDownloads": user_data.get("bonusDownloads", 0),
-            "isOnline": user_data.get("isOnline", False)
+            "isOnline": user_data.get("isOnline", False),
+            "likesCount": user_data.get("likesCount", 0),
+            "downloadsCount": user_data.get("downloadsCount", 0)
         }), 200
 
     except Exception as e:
@@ -1968,6 +2027,7 @@ if __name__ == "__main__":
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
